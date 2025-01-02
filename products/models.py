@@ -3,15 +3,25 @@ from  django.contrib.auth.models import User
 
 # Create your models here.
 
-# Product Model
+# Start Category Model
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+    created_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+# Start Product Model
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     price = models.IntegerField()
     stock_quantity = models.IntegerField()
-    category = models.CharField(max_length=50)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
     image_url = models.URLField(blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
+    
 
     def __str__(self):
         return self.name

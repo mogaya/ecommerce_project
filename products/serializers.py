@@ -1,12 +1,13 @@
 from rest_framework import serializers
-from .models import Product, Order, OrderItem
+from .models import Product, Order, OrderItem, Category
 
 # Start Product Serializer
-
 class ProductSerializer(serializers.ModelSerializer):
+    category_name = serializers.CharField(source='category.name', read_only= True)
+
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ['name','description','price','stock_quantity','category_name','image_url','created_date']
 
     def validate_price(self, value):
         if value <= 0:
@@ -28,12 +29,9 @@ class ProductSerializer(serializers.ModelSerializer):
         if len(value) > 30:
             raise serializers.ValidationError("Name cannot exceed 30 characters")
         
-        return value
-    
-# End Product Serializer
+        return value 
 
 # Start OrderItem Serializer
-
 class OrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
 
@@ -42,10 +40,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = ['product', 'product_name', 'quantity', 'subtotal']
         read_only_fields = ['subtotal'] 
 
-# End OrderItem Serializer
-
 # Start Order Serializer
-
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, write_only= True)
     total_price = serializers.IntegerField(read_only= True)
@@ -85,3 +80,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return order
 
+# Start Category Serializer
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
